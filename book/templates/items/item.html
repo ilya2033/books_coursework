@@ -1,0 +1,614 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block page %}
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+
+function addComment(data, append = false, commentId = null){
+
+
+	if (commentId != null){
+		comment_id = commentId;
+	}else{
+		comment_id = data['comment_id'];
+	}
+
+    var html;
+    comment_author_id = data['comment_author_id'];
+    comment_author_image = data['comment_author_image'];
+    comment_author = data['comment_author'];
+    comment_author_date = data['comment_date'];
+    comment_text = data['comment_text'];
+    item_id = data['item_id'];
+    comment_parent = data['parent'];
+    user_id = data['user_id'];
+	if(user_id == comment_author_id){
+		var btn = '<div class=" row w-100"><div class="col-1 offset-10"><a  data-toggle="collapse" href="#editComment_'+comment_id+'" role="button" aria-expanded="false" >Изменить</a></div></div>';
+
+		var editBlock ='<div class="row w-100"><div class="row w-100" style="height:15px;"></div><div class="collapse col-11 offset-1" id = "editComment_'+comment_id+'"  ><div class="row w-100" style="height:5px;"></div><div class="row w-100" id="editCommentField_'+comment_id+'"><div class=" card-body"><form action="{% url 'items:edit_comment' item.id  %}" method="POST" name="edit_comment_form" class=" form-row "><input type= "hidden" name = "csrfmiddlewaretoken" value = "'+csrf+'"><textarea name="comment_text" cols="40" rows="4" class="form-control w-100" placeholder="Comment" required="true"  id="id_comment_text">'+comment_text+'</textarea><input type="hidden" value="'+comment_id+'" name="comment_id"><input type="hidden" value="'+comment_author_id+'" name="author_id"><div class="row form-control invisible pad-0" style="height: 5px;"></div><input class="btn btn-success " type="submit" value="Send"></form></div></div><div class="row w-100" style="height:5px;"></div></div></div>';
+
+	}else{
+		var btn = '';
+		var editBlock = '';
+	}
+    if( comment_parent == null){
+        html = '<div class = "col-12" id = "Comment_'+comment_id+'" ><div  class="row" ><div class="w-100" style="min-height: 32px;"><p><a href="/profile/'+comment_author_id+'" ><img class="img-fluid"  src="'+comment_author_image+'" style = "height: 32px;  width: 32px;"></a>'+comment_author+'</p></div><div class="w-100" style="min-height: 20px;"><p class = "comment_date">'+comment_author_date+'</p></div><br><div class="w-100" style="min-height: 20px;" name = "text"><p>'+comment_text+'</p></div><div class="w-100" style="min-height: 20px;"><a  class = "commentAddLike"href="/items/'+item_id+'/comment_add_like/'+comment_id+'"><img src="/static/icons/like_icon.png" class = "icon_button"></a> <span class = "likes">0</span></div>'+btn+editBlock+'<a href="#replies'+comment_id+'" data-toggle = "collapse"></a><div class="row w-100" style="height:0px;"></div><div class="collapse col-11 offset-1" id = "replies'+comment_id+'" style = "border-left: 1px dashed grey;" ></div><div class="row w-100" style="height:15px;"></div><a class="btn btn-primary" data-toggle="collapse" href="#Comment'+comment_id+'" role="button" aria-expanded="false" >Ответить</a></div><div class="w-100 collapse" id="Comment'+comment_id+'" ><div class=" card-body"><form name="comment_form" action="{% url 'items:leave_comment' item.id %}" method="post" class="form-row"><textarea name="comment_text" cols="40" rows="4" class="form-control w-100" placeholder="Comment" required="" id="id_comment_text"></textarea><input type="hidden" name="parent_id" value="' + comment_id+'"><div class="row form-control invisible pad-0" style="height: 5px;"></div><input class="btn btn-success " type="submit" value="Send"><input type= "hidden" name = "csrfmiddlewaretoken" value = "'+csrf+'"></form></div></div><div class="row w-100" style="height:5px;"></div></div>';
+        if(append == false){
+        	$("#comments").prepend(html);
+        }else{
+        	$("#comments").append(html)
+        }
+    }else{
+    	$('a[href = "#replies'+comment_parent+'"]').html('Ответы');
+        html = '<div class = "col-12" id = "Comment_'+comment_id+'" ><div  class="row" ><div class="w-100" style="min-height: 32px;"><p><a href="/profile/'+comment_author_id+'" ><img class="img-fluid"  src="'+comment_author_image+'" style = "height: 32px;  width: 32px;"></a>'+comment_author+'</p></div><div class="w-100" style="min-height: 20px;"><p class = "comment_date">'+comment_author_date+'</p></div><br><div class="w-100" style="min-height: 20px;" name = "text"><p>'+comment_text+'</p></div><div class="w-100" style="min-height: 20px;"><a  class = "commentAddLike"href="/items/'+item_id+'/comment_add_like/'+comment_id+'"><img src="/static/icons/like_icon.png" class = "icon_button"></a> <span class = "likes">0</span></div>'+btn+editBlock+'<div class="row w-100" style="height:15px;"></div></div><div class="row w-100" style="height:5px;"></div></div>';
+        $("#replies"+data['parent']).append(html);
+    }
+
+    $('#firstComment').remove()
+}
+
+
+
+
+
+function lit_stars(num){
+	num = parseInt(num)
+	stars =$(".icon_star");
+	for(let i = 0;i<=num;i++){
+		star=stars.eq(i)
+		star.removeClass('icon_star_empty').addClass('icon_star_fill');				
+	}	
+	for(let i = num;i<={{max_score}}+1;i++){
+		star=stars.eq(i)
+		star.removeClass('icon_star_fill').addClass('icon_star_empty');
+			
+	}		
+}
+
+
+let before;
+
+$('.icon_star').on({
+
+	mouseenter:function(e){
+		before = $('.icon_star_fill').last().attr('score');
+		if(before == undefined){
+			before =0
+		}
+		e.preventDefault();
+		current = $(this).attr('score');
+		lit_stars(current);
+	},
+	mouseleave:function(e){
+		e.preventDefault();
+		lit_stars(before);
+	},
+	click:function(e){
+	    star= $(this);
+	    stars = $(".icon_star");
+	    $.ajax({
+	            type: "POST",
+	            url: star.attr('href'),
+				data:{
+					csrfmiddlewaretoken: csrf,
+					score:star.attr('score')
+				},
+	            success: function(data){
+	                if(data['result'] == true){
+	                   	Toast('Рейтинг изменен');
+	                   	$('#rating').html('Рейтинг: '+data['item_rating']+'/{{max_score}}')
+                   		lit_stars(data['item_rating']);
+                   		before = data['item_rating']
+	                }else{
+	                    Toast("Войдите или зарегистрируйтесь чтобы оставить ваш рейтинг!")
+	                } 	                
+	            },
+	            error: function(){
+	            	Toast('ajax_error');
+	            },
+	            dataType: 'json',      
+	    });
+	}
+
+});
+
+
+
+
+
+
+
+
+
+	$(document).on('click','#showCommentsBtn',function(e){
+			e.preventDefault();
+			btn = $(this)
+		    $.ajax({
+		            type: "GET",
+		            url: btn .attr('href'),
+		            success: function(data){
+		                    if(data['result']){
+		                    	for(key in data){
+		                    		if( key != 'result'){
+		                    			addComment(data[key],true,comment_id = key);
+		                    		}
+		                    		btn.parent().remove();
+		                    	}
+		                    }
+		            },
+		            dataType: 'json',
+		    });
+	});
+
+
+
+
+	$(document).on('submit','form[name="edit_comment_form"]',function(e){
+		e.preventDefault();
+
+		form = $(this);
+		$.ajax({
+			type: 'POST',
+			url: form.attr('action'),
+			data:{
+				csrfmiddlewaretoken: csrf,
+				comment_id: form.find('input[name="comment_id"]').val(),
+				comment_text: form.find('#id_comment_text').val(),
+				comment_author_id: form.find('input[name = "author_id"]').val(),
+			},
+			success: function(data){
+				if(data['result'] == true ){
+					comment = $('#Comment_'+data['comment_id']);
+					comment.find('div[name = "text"]>p').html(data['comment_text']);
+					form.closest('.collapse').animate({
+						height:0,},
+						300,
+						function(){
+							form.closest('.collapse').removeClass('show');
+						}
+					);
+					Toast('Коментарий был изменен ');
+				}else{
+					Toast('ajax_error');
+				}
+			},
+			dataType:'json',
+
+		});
+	});
+
+
+
+
+
+
+	$(document).on('click', '.status_btn', function(e){
+	    btn= $(this);
+	    console.log(btn.attr('value'))
+	    $.ajax({
+	            type: "POST",
+	            url: btn.attr('href'),
+				data:{
+					csrfmiddlewaretoken: csrf,
+					status: btn.attr('value'),
+				},
+	            success: function(data){
+	                if(data['result'] == 'success'){
+	                    $('#user_status_area').html(data['status']);
+	                    $('#add_menu').removeClass('show');
+	                   	Toast('Статус изменен');
+	                }else{
+	                    Toast("Войдите или зарегистрируйтесь чтобы добавить в бибиотеку!")
+	                }
+	            },
+	            error: function(){
+	            	Toast('ajax_error');
+	            },
+	            dataType: 'json',
+	    });
+	});
+
+
+
+
+
+
+
+
+	$(document).on('click', '.commentAddLike', function(e){
+	    e.preventDefault()
+	    like= $(this);
+	    $.ajax({
+	            type: "GET",
+	            url: like.attr('href'),
+	            success: function(data){
+	                if(data['result'] == 'success'){
+	                    like.next('span').html(String(data['total_likes']));
+	                }else{
+
+	                    Toast("Войдите или зарегистрируйтесь чтобы оставить лайк");
+	                }
+	            },
+	            error: function(){
+	            	Toast('ajax_error');
+	            },
+	            dataType: 'json',
+	    });
+	});
+
+
+
+	$(document).on('submit', 'form[name = "comment_form"]',function(e){
+
+	    e.preventDefault();
+	    var parent_id;
+	    var form = $(this);
+	    try{
+	        parent_id = form.find('input[name="parent_id"]').val();
+	    }catch(err){
+	        parent_id = "None";
+	    }
+	    $.ajax({
+	            type: "POST",
+	            url: form.attr('action'),
+	            data: {
+	                csrfmiddlewaretoken: csrf,
+	                comment_text: form.find('#id_comment_text').val(),
+	                parent_id: parent_id,
+	            },
+	            success: function(data){
+	            	addComment(data);
+	            	comment_text: form.find('#id_comment_text').val('');
+	            	Toast('Комментарий добавлен!');
+	            },
+	            dataType: 'json',
+	    });
+	});
+
+
+
+
+
+
+
+
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class = "row gap-1" ></div>
+{% include 'search_bar.html' %}
+<div class="row">
+	<div class="col-md-10 offset-md-1">
+		<div class = "row gap-1" ></div>
+		<div class="row ">
+			<div class="col-sm-12 col-md-9">
+				<div id = "" class = "container-fluid bg-white" style = " min-height: 600px;">
+					<div class="row" style= "min-height: 550px;">
+						<div class="col-sm-8 col-md-9 col-7 p-4">
+							<div class="row" >
+								<div class="title">
+									<div class="container-fluid">
+										<h1 id= "">{{item.item_title}}</h1>
+										<h5 class = "text-secondary">{{item.item_other_title}}</h5>
+										<h5 id = "rating">Рейтинг: {%if rating%}{{rating}}/{{max_score}}{%else%}Отсутсвует{%endif%}</h5> 
+										<div class="row d-inline ml-1">
+											{%for i in score_range%}
+												{% if rating%}
+													{%if i <= rating%}
+														<i href ="{% url 'items:item_rating' item.id%}" score = "{{i}}" class="fa fa-star icon_star icon_star_fill"  id = "star_{{i}}"></i>
+													{%else%}
+														<i href ="{% url 'items:item_rating' item.id%}" score = "{{i}}"  class="fa fa-star icon_star icon_star_empty" aria-hidden="true" id = "star_{{i}}"></i>
+													{%endif%}
+												{%else%}
+												<i href ="{% url 'items:item_rating' item.id%}" score = "{{i}}" class="fa fa-star icon_star icon_star_empty"  id = "star_{{i}}"></i>
+												{%endif%}
+											{% endfor%}
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class = "row" style = "min-height: 300px;">
+								<div class="container-fluid">
+									{{item.item_desc|linebreaks }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="container-fluid">
+									tags:
+								{% for tag in tags%}
+									<a href="{% url 'searchsys:tag_search' tag.slug%}"> {{tag.name}}</a>,&ensp;
+								{% endfor%}
+								</div>
+							</div>
+						</div>
+						<div class = "col-sm-4 col-md-3 col-5 p-1" style="padding: 10px;">
+							<div class="row">
+								<div class="container-fluid text-center">
+										<a class = "" href="{% url 'items:item' item.id %}"><img class = "img-fluid" src="{{item.item_title_image.url}}"></a>
+								</div>
+							</div>
+
+							<div class="row text-center text-nowrap text-white" style="font-size: 12px; ">
+								<div class="container-fluid ">
+									<div class="container-fluid bg-secondary p-0">
+										<div class="navbar-toggler toggler-example w-100" type="button" data-toggle="collapse" data-target="#add_menu"
+										aria-controls="add_menu" aria-expanded="false" aria-label="Toggle" id = "user_status_area">	
+											{% if username%}
+												{%if lib_item%}
+													{{lib_item.status}}
+												{%else%}
+													{{status.STATUS.DEFAULT}}
+												{%endif%}
+											{%else%}
+												{{status.STATUS.DEFAULT}}
+											{% endif %}
+										</div>
+										<div class="collapse text-white bg-secondary " id="add_menu" style="font-size: 14px;cursor: pointer;">
+											<div href = "{% url 'library:add_status' item.id%}" class="w-100 p-1 status_btn" style= "border-top: 1px solid #ABABAB;" value="WATCH">{{status.STATUS.WATCH}}</div>
+											<div href = "{% url 'library:add_status' item.id%}" class="w-100 p-1 status_btn" style= "border-top: 1px solid #ABABAB; " value="WILL">{{status.STATUS.WILL}}</div>
+											<div href = "{% url 'library:add_status' item.id%}" class="w-100 p-1 status_btn" style= "border-top: 1px solid #ABABAB; "value="DONE">{{status.STATUS.DONE}}</div>
+											<div href = "{% url 'library:add_status' item.id%}" class="w-100 p-1 status_btn" style= "border-top: 1px solid #ABABAB; "value="FROZEN">{{status.STATUS.FROZEN}}</div>
+										</div>      
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="container-fluid" >
+							<div class="w100"><h3>Главы</h3></div>
+							{%if item.chapters.all%}
+							{% for chapter in item.chapters.all %}
+								<div class="chapter w-100 p-1 text-dark" data-toggle="collapse" data-target="#chapter_{{chapter.id}}_page_list"
+										aria-controls="chapter_{{chapter.id}}_page_list" aria-expanded="false" aria-label="Toggle">{{chapter.title}}</div>
+								<div class="collapse " id="chapter_{{chapter.id}}_page_list" style="font-size: 14px;cursor: pointer;">
+								{%for page in chapter.page.all%}
+									<a class = "link-unstyled" href="{% url 'items:page' item.id page.id %}"><div class="chapter w-100 ml-3 p-1 text-dark" >{{page.number}}</div></a>
+								{%endfor%}
+								</div>
+							{%endfor%}
+							{%else%}
+							<p>Глав пока нет :(</p>
+							{%endif%}
+						</div>
+					</div>
+					<div class="row gap-1" ></div>
+				</div>
+			</div>
+			<div id = "" class = " d-none d-md-block col-md-3  ">
+				{% include 'last_upd.html'%}
+			</div>
+			<div class="col-sm-12 col-md-9 ">
+			<div class = 'container-fluid bg-white' style = "opacity: 0.9;">
+				{% if user.username %}
+					<form action = "{% url 'items:leave_comment' item.id %}" method="POST" name = "comment_form" class = " form-row " >
+						{% csrf_token %}
+							{{comment_form}}
+							<div class="row form-control invisible pad-0 gap-1"></div>
+							<button type="submit" id = "" class = "btn btn-success">Отправить</button>
+
+					</form>
+				{%else%}
+				<div class="container-fluid text-center pad-0" style="background: #ff6766; "><button class="btn shadow-none"   data-toggle = "modal" data-target = "#registerModal" role="button" style="color:white; line-height: 25px; height: 25px!important; padding: 0;">
+	            Зайдите или зарегистрируйтесь чтобы оставить комментарий </button></div>
+
+				{%endif%}
+				<div class="row gap-1" ></div>
+				<div id = "comments" class="">
+					{% if comments %}
+						{% for c in comments %}
+							{% if not c.parent %}
+								<div class = 'col-12' id = "Comment_{{c.id}}" >
+									<div  class="row" >
+										<div class="w-100" style="min-height: 32px;"><p><a href="{% url 'userprofiles:profile' c.comment_author.profile.id %}"><img class="img-fluid"  src="{{c.comment_author.profile.image_url}}" style = "height: 32px;  width: 32px;"></a>
+										{{c.comment_author}}</p></div>
+										<div class="w-100" style="min-height: 20px;"><p class = 'comment_date'>{{c.comment_date|date:"j E"}} {{c.comment_date|time }}</p></div>
+										<br>
+										<div class="w-100" style="min-height: 20px;" name = "text"><p>{{c.comment_text}}</p></div>
+										<div class="w-100" style="min-height: 20px;">
+											<a  class = "commentAddLike"href="{% url 'items:comment_add_like' item.id c.id  %}"><img src="{% static 'icons/like_icon.png' %}" class = "icon_button"></a>
+											<span class = "likes">
+											{% if c.get_total_likes %}
+												{{c.get_total_likes}}
+											{%else%}
+												0
+											{% endif %}
+											</span>
+
+
+										</div>
+										{% if c.comment_author.id == user.id %}
+										<div class=" row w-100">
+											<div class="col-1 offset-10">
+											<a  data-toggle="collapse" href="#editComment_{{c.id}}" role="button" aria-expanded="false" >
+												Изменить
+											</a>
+											</div>
+										</div>
+										{% endif %}
+										{% if c.comment_author.id == user.id %}
+										<div class="row w-100">
+											<div class="row gap-1"></div>
+
+											<div class="collapse col-11 offset-1" id = "editComment_{{c.id}}"  >
+
+												<div class="row gap-1"></div>
+												<div class="row w-100" id="editCommentField_{{c.id}}">
+													<div class=" card-body">
+
+														<form action="{% url 'items:edit_comment' item.id  %}" method="POST" name="edit_comment_form" class=" form-row ">
+															{% csrf_token%}
+															<textarea name="comment_text" cols="40" rows="4" class="form-control w-100" placeholder="Comment" required="true"  id="id_comment_text">{{c.comment_text}}</textarea>
+															<input type="hidden" value="{{c.id}}" name="comment_id">
+															<input type="hidden" value="{{c.comment_author.id}}" name="author_id">
+
+												            <div class="row form-control invisible pad-0 gap-1"></div>
+												            <input class="btn btn-success " type="submit" value="Отправить">
+												        </form>
+													</div>
+												</div>
+												<div class="row gap-1"></div>
+											</div>
+										</div>
+										{% endif %}
+
+
+										{% if c.get_total_replies > 0 %}
+											<a href="#replies{{c.id}}" data-toggle = "collapse">Ответы</a>
+											<div class="collapse col-11 offset-1" id = "replies{{c.id}}" style = "border-left: 1px dashed grey;" >
+												{% for reply in c.replies.all %}
+												<div class = "row" id="Comment_{{reply.id}}">
+													<div class="w-100" style="min-height: 20px;">
+														<p><a href="{% url 'userprofiles:profile' c.comment_author.profile.id %}"><img class="img-fluid"  src="{{c.comment_author.profile.image_url}}" style = "height: 32px;  width: 32px;"></a>{{reply.comment_author}}</p>
+													</div>
+													<div class="w-100" style="min-height: 20px;">
+														<p class = 'comment_date'>{{reply.comment_date|date:"j E" }} {{reply.comment_date|time }}</p>
+													</div>
+													<div class="w-100" style="min-height: 20px;" name = "text"><p>{{reply.comment_text}}</p></div>
+													<div class="w-100" style="min-height: 10px;">
+														<a class = "commentAddLike"href="{% url 'items:comment_add_like' item.id reply.id  %}"><img src="{% static 'icons/like_icon.png' %}" class = "icon_button"></a>
+														<span class = "likes">
+														{% if reply.get_total_likes %}
+															{{reply.get_total_likes}}
+														{%else%}
+															0
+														{% endif %}
+														</span>
+													</div>
+													{% if reply.comment_author.id == user.id %}
+													<div class=" row w-100">
+														<div class="col-1 offset-10">
+														<a  data-toggle="collapse" href="#editComment_{{reply.id}}" role="button" aria-expanded="false" >
+															Изменить
+														</a>
+														</div>
+													</div>
+													{% endif %}
+													{% if reply.comment_author.id == user.id %}
+													<div class="row">
+														<div class="row gap-1" ></div>
+														<div class="collapse col-11 offset-1" id = "editComment_{{reply.id}}"  >
+
+															<div class="row gap-1"></div>
+															<div class="row w-100" id="editCommentField_{{reply.id}}">
+																<div class=" card-body">
+
+																	<form action="{% url 'items:edit_comment' item.id  %}" method="POST" name="edit_comment_form" class=" form-row ">
+																		{% csrf_token%}
+																		<textarea name="comment_text" cols="40" rows="4" class="form-control w-100" placeholder="Comment" required="true"  id="id_comment_text">{{reply.comment_text}}</textarea>
+																		<input type="hidden" value="{{reply.id}}" name="comment_id">
+																		<input type="hidden" value="{{reply.comment_author.id}}" name="author_id">
+
+															            <div class="row form-control invisible pad-0" style="height: 5px;"></div>
+															            <input class="btn btn-success " type="submit" value="Отправить">
+															        </form>
+																</div>
+															</div>
+															<div class="row gap-1"></div>
+														</div>
+													</div>
+													{% endif %}
+													<hr>
+												</div>
+												{% endfor %}
+
+											</div>
+										{% else %}
+											<a href="#replies{{c.id}}" data-toggle = "collapse"></a>
+											<div class="collapse col-11 offset-1" id = "replies{{c.id}}" style = "border-left: 1px dashed grey;" ></div>
+										{% endif %}
+										<div class="w-100">
+										{% if user.username %}
+											<div class="row gap-1"></div>
+											<a class="btn btn-primary" data-toggle="collapse" href="#Comment{{c.id}}" role="button" aria-expanded="false" >
+												Ответить
+											</a>
+										{% endif %}
+										</div>
+									</div>
+									<div class="row gap-1 "></div>
+									<div class="collapse w-100" id="Comment{{c.id}}">
+										<div class=" card-body">
+									        <form name = "comment_form" action="{% url 'items:leave_comment' item.id %}" method="post" class="form-row">
+									            {{ comment_form }}
+									            {% csrf_token %}
+									            <input type="hidden" name="parent_id" value="{{ c.id }}">
+									            <div class="row form-control invisible pad-0 gap-1" ></div>
+									            <input class="btn btn-success " type="submit" value="Отправить">
+									        </form>
+										</div>
+									</div>
+									<div class="row gap-1" ></div>
+								</div>
+							{% endif %}
+						{% endfor %}
+						{% if  max_comments %}
+							<div class="row text-center justify-content-center"> 
+								<a class = "btn btn-link" href="{% url 'items:show_all_comments' item.id%}" id = "showCommentsBtn">Показать все комментарии</a>
+							</div>
+						{% endif%}
+					{%else%}
+							<div class="row text-center justify-content-center p-2" id = "firstComment"> 
+								Будь первым!
+							</div>
+					{% endif %}
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

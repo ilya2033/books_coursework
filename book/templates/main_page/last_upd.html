@@ -1,0 +1,27 @@
+{%load static%}
+{% block javascript%}
+{% endblock%}
+
+
+{% block last_upd%}
+<div class="row">
+	<div class = "w-100 text-center font-weight-bold text-white p-2" style="background-image: url({% static 'images/main_header_1.png' %});opacity: 0.85; min-height: 45px; ">Последние обновления</div>
+	{% for item in last_upd%}
+	<div class="w-100">
+		<a class = "link-unstyled" href= "{% url 'items:item' item.id%}">
+			<div class="row">
+				<div class="col-4"><img class = "img-fluid" src="{{item.item_image.url}}"></div>
+				<div class="col-8">
+				<strong>  {{item.item_title}}</strong><br>
+
+				<span class = 'd-none d-xl-block'>{{item.item_desc|truncatechars:70 }}</span>
+				</div>
+			</div>
+		</a>
+		<div class="row gap-1"></div>
+
+	</div>
+	{%endfor%}
+</div>
+
+{%endblock%}

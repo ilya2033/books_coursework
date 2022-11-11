@@ -1,0 +1,302 @@
+/*BOOTSTRAP*/
+.navbar{
+	opacity: 0.93!important;
+}
+	.nav-link{
+		color: white!important;	
+	}
+	.nav-link{
+		height: 50px!important; 
+		padding: 12px 8px!important;
+	}
+	.navbar-brand{
+		padding:10px 0!important;
+		color:white!important;
+	}
+
+	.nav-header-item{
+		transition: .3s;
+		color: white!important;
+	}
+		.nav-header-item:hover{
+			background: #ff6766;
+			opacity: 1;
+		}
+
+
+
+
+
+
+
+.dropdown-toggle::before, 
+.dropdown-toggle::after {
+    border: none!important;
+    content: none!important;
+}
+
+
+
+
+
+
+body {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  overflow-x: hidden;
+  background: #F1F3F6!important;
+}
+
+
+
+
+
+
+
+
+/* CUSTOM ---------------------------------------------------------------------*/
+
+
+.none_select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    outline: none;
+    
+}
+.pad-0{
+	padding: 0!important;
+}
+
+.button{
+	padding: 4px 6px;
+	color:black;
+	background: #63d894;
+	cursor: pointer;
+	text-align: center;
+}
+
+.link-unstyled{
+	text-decoration: none!important;
+	color:black;
+}
+	.link-unstyled:hover{
+		text-decoration: none!important;
+		color:black;
+	}
+
+
+
+
+.icon_button{
+	height: 25px;
+}
+
+
+
+
+
+
+/*  MAIN MENU ---------------------------------------------------------------------------------------------*/
+.nav_menu_top {
+  background-image: url('../images/main_header_1.png')!important;
+  border-top: 2px solid #ff6766;
+  border-bottom: 2px solid #ff6766;
+}
+
+.login_btn{
+	background: #63d894;
+}
+
+
+/* RIGHT MENU ---------------------------------------------------------------------*/
+
+
+.w_menu>div{
+	border-bottom: .5px solid black;
+	background-color: #3dc47f!important;
+	height: 50px;
+	line-height: 50px;
+}
+	.w_menu>div:hover{
+		background: #099142!important;
+		transition: 0.5s;
+		cursor: pointer;
+	}
+	.w_menu>div:last-child{
+		border-bottom: none;
+	}
+
+
+
+
+
+
+
+
+/* COMMENTS -----------------------------------------------------*/
+
+
+
+#comments>div{
+	border-bottom: .5px solid grey;
+}
+	#comments>div:last-child{
+		border-bottom: none;
+	}
+
+
+
+
+
+.comment{
+	justify-content: space-between;
+	padding: 10px;
+	width: 90%; 
+	float: left;
+	min-height: 70px;
+	border-bottom: 1px solid #e5e7e6;
+	word-wrap: break-word;
+}
+	.comment:last-child{
+			border-bottom: none;
+		}
+	.comment_date{
+		font-size: 14px;
+	}
+
+
+
+
+
+
+
+
+
+/* CHAPTER --------------------------------------------------------------------------------------- */
+
+.chapter{
+	text-decoration: none!important;
+}
+	.chapter{
+		cursor:pointer;
+		border-bottom: 1px solid gray;
+		border-left:5px solid gray;
+		transition: .2s;
+	}
+	.chapter:hover{
+		background: gray;
+		text-decoration: none;
+	}
+	.chapter:first-child{
+		border-top: 1px solid gray;
+	}
+	.chapter:last-child{
+		border-bottom: none;
+	}
+
+
+	.chapter_button{
+		transition: .3s;
+	}
+		.chapter_button:hover{
+			background: #484D52!important;
+
+		}
+
+
+	.chapter-text{
+		padding: 5px 10px 5px 10px;
+	}
+
+
+
+
+
+
+/* library --------------------------------------------------------*/
+
+
+
+
+.library{}
+	.btn-get-library{
+		border-right:1px solid grey;
+	}
+		.btn-get-library:hover{
+			background: #6A717A;
+		}
+
+
+
+
+
+/* TAGS -------------------------------------------------------*/
+
+.tag-list{
+
+}
+	.tag-list-item{
+		cursor: pointer;
+
+	}
+		.tag-list-item:hover{
+			background: #B2B2B2;
+		}
+
+
+
+
+#tag_search_rez {
+	height:250px;
+	overflow-y: auto;
+}
+	#tag_search_rez input{
+		position: relative!important;
+		vertical-align: middle!important;
+	}
+	#tag_search_rez label{
+	    position: relative;
+	    margin:0 0 0 0 ;
+	    display: inline-block;
+	    left: 15px;
+	    vertical-align: middle!important;
+	}
+
+
+
+
+
+
+
+
+
+
+
+/* OTHER -------------------------------------------------------*/
+.toast{
+	cursor: pointer!important;
+}
+
+
+
+
+
+.gap-1{
+	height: 10px;
+}
+
+
+.icon_star{
+	font-size:20px;
+	cursor: pointer;
+	transition: 0.2s;
+}
+	.icon_star_fill{
+		color:red;
+	}
+	.icon_star_empty{
+		color: black;
+		}

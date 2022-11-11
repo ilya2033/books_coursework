@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block register %}
+
+
+
+
+<div class="row" style="height: 25px;"></div>
+<div class="col-md-6 offset-md-3">
+	<div class="row bg-white justify-content-center" style="padding: 30px; opacity: .9;">
+		<form action="{% url 'loginsys:register'%}" method="post" class ="form-group">
+			{% csrf_token %}
+			{{register_form|crispy }}
+			<button class = "btn btn-success w-100 "  type="submit" style= "margin-top: 5px;" id ="regBtn">register</button>
+		</form>
+	</div>
+</div>
+{% endblock register %}
+

@@ -1,0 +1,72 @@
+{% load static %}
+
+
+{% block javascript%}
+<script type = "text/javascript">
+    $(document).on('click','.btn-get-library',function(e){
+    	e.preventDefault();
+      	btn = $(this);
+      	href = btn.attr('href');
+		$.ajax({
+		  type: 'GET',
+		  url: href,
+		  success: function(data){
+		    if(data['result'] == true){
+		      $('#library-items').html('');
+		      for(key in data){
+		        if( key != 'result'){
+		          var image_url = data[key]['Item_image'];
+		          var item_id = key;
+		          var item_desc = data[key]['item_desc'];
+		          var title = data[key]['Title'];
+		          var html = '<a class = "page-link text-dark w-100" href = "/items/'+item_id+'/"><div class="row " ><div class="col-3 col-sm-2 col-md-2"> <img src="'+image_url+'" class = "" style="height: 100px;"></div><div class="col-9 col-sm-10 col-md-10 "><div class = "row">'+title+'</div><div class = "row" style = "overflow:hidden;">'+item_desc+'.....</div></div></div></a><div class = "row " style = "height:3px;"></div>';
+		          $('#library-items').append(html);
+		        }
+		      }
+		    }else{
+		      $('#library-items').html('');
+		    }
+		  },
+		  dataType:'json',  
+
+		});  
+	});          
+</script>
+{%endblock%}
+
+
+{% block library%}
+<div class="container-fluid ">
+	<div class="row bg-dark">
+		<nav class="navbar navbar-expand  p-0">
+			<ul class = "navbar-nav" style = "cursor:pointer;">
+				<li class="nav-item text-white "><a class = "nav-link btn-get-library" href = "{% url 'library:get_library' 'all'%}" >Все</a></li>
+				<li class="nav-item text-white "><a class = "nav-link btn-get-library" href = "{% url 'library:get_library' 'watch'%}" >{{status.STATUS.WATCH}}</a></li>
+				<li class="nav-item text-white "><a class = "nav-link btn-get-library" href = "{% url 'library:get_library' 'done'%}" >{{status.STATUS.DONE}}</a></li>
+				<li class="nav-item text-white "><a class = "nav-link btn-get-library" href = "{% url 'library:get_library' 'will'%}" >{{status.STATUS.WILL}}</a></li>
+				<li class="nav-item text-white "><a class = "nav-link btn-get-library" href = "{% url 'library:get_library' 'frozen'%}" >{{status.STATUS.FROZEN}}</a></li>
+			</ul>
+
+		</nav>
+	</div>
+	<div class="row " id = "library-items">
+
+		{% for item in items%}
+		<a class = "page-link text-dark w-100" href = "{% url 'items:item' item.id %}">
+			<div class="row ">
+				<div class="col-3 col-sm-2 col-md-2"> <img src="{{item.item_title_image.url}}" class = "" style="height: 100px;"></div>
+				<div class="col-9 col-sm-10 col-md-10 ">
+					<div class = "row">{{item.item_title}}</div>
+					<div class = "row" style = "overflow:hidden;">{{item.item_desc|slice:":300"}}.....</div>
+				</div>
+			</div>
+		</a>	
+		{%endfor%}
+	</div>
+</div>
+
+
+{%endblock%}
+
+
+

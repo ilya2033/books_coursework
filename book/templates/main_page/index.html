@@ -1,0 +1,38 @@
+{%extends 'base.html'%}
+{% block page %}
+<div class="row">
+	<div class="container-fluid bg-danger">	
+		{{message}}
+	</div>	
+</div>
+
+
+
+<div class = "row" style = "height: 10px;"></div>
+{% include 'search_bar.html'%}
+
+<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-10 ">
+		<div class = "row" style = "height: 10px;"></div>
+		<div class="row">
+			<div id = "" class = "container-fluid " style = "min-height: 700px; background: #FFFFFF;">
+				<div class="row justify-content-center">
+					<h5>Последние обновления</h5>
+				</div>	
+				<div class="row" id ="items">
+					{% for item in items %}
+						<div class = "col-4 col-sm-3 col-md-2 " style="padding: 10px;">
+							<div class="w-100">
+								<a href ="{% url 'items:item' item.id %}"><img class = "w-100"src="{{item.item_image.url}}"></a>
+							</div>
+							<div class="w-100 text-center "><a class ="link-unstyled" href ="{% url 'items:item' item.id %}"><h5>{{item.item_title}}</h5></a></div>
+						</div>
+					{% endfor %}
+				</div>
+				<hr>
+			</div>
+		</div>
+	</div>
+</div>	
+{% endblock%}

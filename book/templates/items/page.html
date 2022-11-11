@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+{% load static%}
+{%block page%}
+	<div class="row" style = "height : 15px"></div>
+	<div class="container bg-white ">
+		<div class="row nav navbar navbar-dark p-0  bg-secondary justify-content-center">
+			{%if  page.id != item.get_first_page.id %}
+				<a  class = "nav  nav-link chater_button" href="{% url 'items:page' item.id page.get_former_page.id%}"><<</a> 
+			{%endif%}
+			<a class ="nav  nav-link chater_button"  href="{% url 'items:item' item.id %}">Книга</a>
+			{%if item.get_last_page.id != page.id%}
+				<a disabled = "" class = " chater_button nav  nav-link" href="{% url 'items:page' item.id page.get_next_page.id %}">>></a>
+			{%endif%}
+		</div>
+		<div class="row page-text p-1">
+			{{page.text|linebreaks }}
+		</div>
+		<div class="row nav navbar navbar-dark p-0  bg-secondary justify-content-center">
+			{%if  page.id != item.get_first_page.id %}
+				<a  class = "nav  nav-link chater_button" href="{% url 'items:page' item.id page.get_former_page.id%}"><<<</a> 
+			{%endif%}
+			<a class ="nav  nav-link chater_button"  href="{% url 'items:item' item.id %}">Книга</a>
+			{%if item.get_last_page.id != page.id%}
+				<a class = " chater_button nav  nav-link" href="{% url 'items:page' item.id page.get_next_page.id %}">>>></a>
+			{%endif%}
+		</div>
+	</div>
+{% endblock %}

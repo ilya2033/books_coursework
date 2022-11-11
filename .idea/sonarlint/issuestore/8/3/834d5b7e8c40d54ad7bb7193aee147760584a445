@@ -1,0 +1,14 @@
+
+<<<<<<< HEAD
+Fpython:S1481X".Remove the unused local variable "image_root".(µøãÊ
+gpython:S1854"IRemove this assignment to local variable 'size'; the value is never used.(ìÂŸÑùÿÿÿÿ
+Fpython:S1481T".Remove the unused local variable "image_root".(µøãÊ
+@python:S108")Either remove or fill this block of code.(ã‘Û¾
+Gpython:S1066;"/Merge this if statement with the enclosing one.(…¼Ù‘
+=======
+Gpython:S1066;"/Merge this if statement with the enclosing one.(…¼Ù‘
+Fpython:S1481T".Remove the unused local variable "image_root".(µøãÊ
+Fpython:S1481X".Remove the unused local variable "image_root".(µøãÊ
+gpython:S1854"IRemove this assignment to local variable 'size'; the value is never used.(ìÂŸÑùÿÿÿÿ
+@python:S108")Either remove or fill this block of code.(ã‘Û¾
+>>>>>>> parent of 7a4b073... \-ranobe

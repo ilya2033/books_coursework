@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block javascript%}
+{% endblock %}
+{% block profile %}
+<div class="row" style="height: 25px;"></div>
+<div class="container bg-white" style = "opacity:.9; min-height: 800px; padding-top:  10px;">
+	{% if user %}
+	<div class="row p-1">
+		<form class="w-100" name = "profile_form" action="{% url 'userprofiles:update'%}" method="post" class ="" enctype="multipart/form-data">
+			{% csrf_token %}
+			<div class="form-row">
+				<div class="row p-1">
+					<div class="col-md-4">
+						<div class="form-group">
+							<img class="img-fluid"  src="{{profile.image_url}}" style = "">
+							{{form.image }}
+						</div>
+					</div>
+					<div class="col-md-8">
+						<div class="row ">
+							<div class="col-6">
+								{{form.username|as_crispy_field }}	
+							</div>	
+							<div class="col-6">		
+								{{form.location|as_crispy_field }}
+							</div>	
+						</div>
+						<div class="row
+						">
+							<div class="col-6">
+								{{form.first_name|as_crispy_field }}
+							</div>
+							<div class="col-6">
+								{{form.last_name|as_crispy_field }}
+							</div>
+						</div>
+						<div class="row p-3">
+							{{form.bio|as_crispy_field }}						
+						</div>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" display="none" name="next" value="{{ request.path }}">
+			<button class="btn btn-primary ml-auto" type="submit">Обновить профиль</button>
+			<hr>
+		</form>
+	</div>
+	<div class="row">	
+		{% include 'library.html' %}
+	</div>	
+	{% endif %}
+</div>
+{% endblock%}

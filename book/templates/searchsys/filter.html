@@ -1,0 +1,405 @@
+{% load static%}
+
+
+{% block javascript%}
+<script type="text/javascript">
+
+
+
+	function url_tags(url){
+	  let tags = $('div.tag-selected', '#tag_selected');
+	  let len = 0;
+	  let pos_len = 0
+	  let neg_len = 0
+	  let pos_tags = []
+	  let neg_tags =[]
+
+
+
+
+
+	  $.each(tags,function(index,element){
+	   	
+	      if($(element).find('.tag-status').html() =='+'){
+	       pos_tags.push($(element).attr('name') );
+	       pos_len++;
+	      }else{
+	        neg_tags.push($(element).attr('name') );
+	        neg_len++;
+	      }
+	      len++;
+	  });
+
+
+
+	  if(len ==0){
+	    url = url + 'pos=,neg=,'
+	  }else{
+	  	if(pos_len ==0){
+	  		url = url+'pos=,';
+	  	}else{
+	  		url = url+'pos='
+			for(i = 0;i<pos_len;i++){
+		  		if( i == pos_len - 1){
+		  			url= url+pos_tags[i] + ',';
+		  		}else{
+		  			url= url+pos_tags[i] + '+'
+		  		}
+		  	}	  		
+	  	}
+	  	if(neg_len ==0){
+	  		url = url+'neg=,';
+	  	}else{
+	  		url = url+'neg=';
+		  	for(i = 0;i<neg_len;i++){
+		  		if( i == neg_len - 1){
+		  			url= url+neg_tags[i] + ',';
+		  		}else{
+		  			url= url+neg_tags[i] + '+'
+		  		}
+		  	}
+	  	}
+	  	
+	  }
+
+	  return(url)
+
+	}
+
+
+	norm_orders = {
+	    {% for key, value in norm_orders.items  %}
+	        '{{ key }}': '{{value}}', 
+	    {% endfor%}
+	}
+	
+	$(document).on('input','form[name="tag_bar"]',function(e){
+	  e.preventDefault();
+
+	  let url = '/search/ajax/tags/exclude='
+	  let selected_tags = $('.tag-selected');
+	  let exclude_tags =[]
+	  len = 0
+
+	  $.each(selected_tags,function(index,element){
+	    exclude_tags.push($(element).attr('name'));
+	  });
+
+
+
+	  $.each(selected_tags,function(index,element){
+        
+          if(len == 0){
+            url = url +($(element).attr('name') );
+          }else{
+            url =  url + '+' +($(element).attr('name') );
+          }
+          len++;
+      });
+
+
+
+      url = url +','
+	  let form = $(this);
+	  tag = form.find('input[ name = "text"]').val();
+	  if(!/\S/.test(tag)){
+	    $('#tag_search_rez').html('');
+	    $('#tag_search_rez').parent().addClass('d-none');
+	  }else{
+	    $('#tag_search_rez').parent().removeClass('d-none');
+	    $.ajax({
+	      type: 'GET',
+	      url: url +tag,
+	      success: function(data){
+	        if(data['result'] == true){
+	          $('#tag_search_rez').html('');
+	          for(key in data){
+	            if( key != 'result'){
+	              let name = data[key]['Name'];
+	              let slug = data[key]['Slug']
+	              let html = '<div class = "w-100 tag-list-item tag-check p-1" name = "'+slug+'" id = "tag_'+slug+'">  '+name+'</div>';
+	              $('#tag_search_rez').append(html);
+	            }
+	          }
+	        }else{
+	          $('#tag_search_rez').html('');
+	          $('#tag_search_rez').parent().addClass('d-none');
+	        }
+	      },
+	      dataType:'json',  
+
+	    });            
+	  }
+
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).on('click', '.tag-check',function(e){
+	e.preventDefault();
+	
+	tag = $(this);
+	name = tag.attr('name');
+	text = tag.html();
+	let html = '<div class = "row w-100  justify-content-between p-1 tag-selected" name = "'+name+'"><a href="" class = "tag-status">+</a>  <a href="" class = "tag-rem">'+text+'</a> <a href="" class = "add_to">удалить</a > </div>';
+	$('#tag_selected').append(html);
+	tag.remove();		
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).on('click', '.add_to,.tag-status',function(e){
+	e.preventDefault();
+	
+	tag = $(this).parent();
+	if( tag.find('.tag-status').html() == "+"){
+		tag.find('.add_to').html("добавить");
+		tag.find('.tag-status').html('-')
+	}else{
+		tag.find('.add_to').html("удалить");
+		tag.find('.tag-status').html('+')
+	}
+
+});
+
+
+$(document).on('click', '#tag_cloud',function(e){
+	e.preventDefault();
+	
+	block = $('#tags_cloud');
+	if (block.css('display') == 'none'){
+		$(block).slideDown("slow");
+	}else{
+		$(block).slideUp("slow");
+	}
+
+});
+
+
+$(document).on('click', '.tag-rem',function(e){
+	e.preventDefault();
+
+	html = '<a href="#" class="link-unstyled text-white float-left pt-1 pr-1"><div class = " bg-secondary tag-check text-center rounded p-1 " name = "'+tag.attr("name")+'" id ="tag_'+tag.attr("name")+'">'+$(this).html()+'</div></a>'
+
+	tag = $(this).parent();
+	tag.remove()
+
+
+	
+	$('#tags_cloud').append(html)
+
+});
+
+
+
+	$(document).on('change', '#order_by',function(e){
+	  e.preventDefault();
+	  let url = '/search/ajax/tag/';
+	  order = norm_orders[$('#order_by').children("option:selected").val()];
+	  url = url_tags(url);
+	  url = url+ 'order=' + order+ '/';
+
+
+
+		$.ajax({
+		  type: 'GET',
+		  url: url,
+		  success: function(data){
+	  		
+
+		    if(data['result'] == true){
+
+
+		      $('#items').empty();
+
+				for(key in data){
+                    if( key != 'result'){
+                      let image_url = data[key]['Item_image'];
+                      let item_id = key;
+                      let item_desc = data[key]['item_desc'];
+                      let title = data[key]['Title'];
+				      let html='<div class = "col-6 col-sm-4 col-md-3 col-lg-2" style="padding: 10px;"><div class="w-100"><a href ="/items/'+item_id+'/"><img class = "w-100"src="'+image_url+'"></a></div><div class="w-100 text-center "><a class ="link-unstyled" href ="/items/'+item_id+'/"><h5>'+title+'</h5></a></div></div>'
+				      $("#items").append(html);
+				  	}
+				}
+		    }else{
+		      $('#items').empty();
+		    }
+		  },
+		  dataType:'json',  
+
+		}); 
+
+    
+
+
+    });
+
+
+
+
+
+			
+
+
+	$(document).on('click', '.tag-check,.tag-selected,.tag-rem',function(e){
+	  e.preventDefault();
+	  order = norm_orders[$('#order_by').children("option:selected").val()];
+	  let url = '/search/ajax/tag/';
+	  url = url_tags(url);
+	  url = url+ 'order=' + order+ '/';
+	  console.log(url)
+
+
+
+
+		$.ajax({
+		  type: 'GET',
+		  url: url,
+		  success: function(data){
+		    if(data['result'] == true){
+
+
+		      $('#items').empty();
+
+				for(key in data){
+                    if( key != 'result'){
+                      let image_url = data[key]['Item_image'];
+                      let item_id = data[key]['id'];
+                      let item_desc = data[key]['item_desc'];
+                      let title = data[key]['Title'];
+				      let html='<div class = "col-6 col-sm-4 col-md-3 col-lg-2" style="padding: 10px;"><div class="w-100"><a href ="/items/'+item_id+'/"><img class = "w-100"src="'+image_url+'"></a></div><div class="w-100 text-center "><a class ="link-unstyled" href ="/items/'+item_id+'/"><h5>'+title+'</h5></a></div></div>'
+				      $("#items").append(html);
+				  	}
+				}
+		    }else{
+		      $('#items').empty();
+		    }
+		  },
+		  dataType:'json',  
+
+		}); 
+
+    });
+
+
+
+
+
+
+
+</script>
+{%endblock%}
+
+
+
+
+
+
+
+
+
+{%block order_by%}
+
+	Сортировать: <select id = "order_by">
+		{% for order in orders%}
+			{% if order == cur_order%}
+    		<option  selected="selected">{{order}}</option>
+    		{%else%}
+    		<option >{{order}}</option>
+			{%endif%}
+			
+    	{% endfor %}
+	</select>
+
+{%endblock %}
+
+<div class="row" style="height: 15px;"></div>
+{%block tag_bar %}
+	<div class="row">
+		<div class = "container-fluid " style="z-index: 1;">
+			<form action = '' id = "search_form" name = "tag_bar" method="POST">
+				{% csrf_token%}
+				<div class="row" style = "padding: 0px 15px;">		
+					<input placeholder="Введите название тега" id = "" class= "form-control col-12" name = "text" style ="" autocomplete="off">
+				</div>
+				<button class="d-none" type="submit"></button>
+			</form>
+			<div class="row" style="height: 5px;"></div>
+		
+		</div>
+	</div>
+
+	<div class="row d-none">
+		<div class = "  container-fluid tag_block" id = "tag_search_rez">
+		</div>
+		<hr>
+	</div>
+
+
+	<div class="row mt-3">
+		<div class="container-fluid tag_block " id = "tag_selected" >
+			{% for tag in pos_tags%}
+			<div class = "row w-100  justify-content-between p-1 tag-selected" name = "{{tag.slug}}" >
+				<a href="" class = "tag-status">+</a>  
+				<a href="" class = "tag-rem">{{tag.name}}</a> 
+				<a href="" class = "add_to">удалить</a >
+			</div>
+			{%endfor%}
+			{% for tag in neg_tags%}
+
+			
+			{%endfor%}
+		</div>
+
+	</div>
+
+	<div class="row mt-5 justify-content-center">
+		<div class=" text-center" style ="cursor: pointer;" id = 'tag_cloud'>
+			<i class="fal fa-cloud " style="font-size: 23px; color: grey; opacity: 0.95;"></i>
+		<br>
+		<span style="font-size: 23px; color: grey; opacity: 0.95;">Облако тегов</span>			
+		</div>
+		<div id = 'tags_cloud' class="container-fluid justify-content-start flex-wrap"  style="display:none">
+			{% for tag in tag_list%}
+			<a href="#" class="link-unstyled text-white float-left pt-1 pr-1">
+			<div class = " bg-secondary tag-check text-center rounded p-1 " name = "{{tag.slug}}" id ="tag_{{tag_slug}}">
+				{{tag.name}}
+			</div>
+			</a>
+			{%endfor%}
+		</div>
+	</div>
+	<div class="row gap-1"></div>
+{% endblock %}
+
+

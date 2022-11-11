@@ -1,0 +1,85 @@
+{% load static%}
+
+{% block javascript%}
+<script type="text/javascript">
+    $(document).on('input','form[name="search_bar"]',function(e){
+          e.preventDefault();
+
+          form = $(this);
+          title = form.find('input[ name = "text"]').val();
+          if(!/\S/.test(title)){
+            $('#search_rez').html('');
+            $('#search_rez').parent().addClass('d-none');
+          }else{
+            $('#search_rez').parent().removeClass('d-none');
+            console.log(form.attr('action')+'&data=' + encodeURIComponent(title),);
+            $.ajax({
+              type: 'GET',
+              url: '/search/ajax/' + title,
+              success: function(data){
+                if(data['result'] == true){
+                  $('#search_rez').html('');
+                  for(key in data){
+                    if( key != 'result'){
+                      var image_url = data[key]['Item_image'];
+                      var item_id = key;
+                      var item_desc = data[key]['item_desc'];
+                      var title = data[key]['Title'];
+                      var html = '<a class = "page-link text-dark" href = "/items/'+item_id+'/"><div class="row" ><div class="col-3 col-sm-2 col-md-2"> <img src="'+image_url+'" class = "" style="height: 100px;"></div><div class="col-9 col-sm-10 col-md-10 "><div class = "row">'+title+'</div><div class = "row" style = "overflow:hidden;">'+item_desc+'</div></div></div></a><div class = "row " style = "height:3px;"></div>';
+                      $('#search_rez').append(html);
+                    }
+                  }
+                }else{
+                  $('#search_rez').html('');
+                  $('#search_rez').parent().addClass('d-none');
+                }
+              },
+              dataType:'json',  
+
+            });            
+          }
+
+        });
+
+
+        $(document).on('submit','form[name="search_bar"]',function(e){
+          form = $(this);
+          text = form.find('input[ name = "text"]').val();    
+          if(!/\S/.test(text)){
+            e.preventDefault();
+          }  
+        });
+
+</script>
+{%endblock%}
+
+
+
+{%block search_bar %}
+	<div class="row">
+		<div class = "col-md-10 offset-md-1 " style="z-index: 1;">
+			<form action = '{% url 'searchsys:search_bar' %}' id = "search_form" name = "search_bar" method="POST">
+				{% csrf_token%}
+				<div class="row" style = "padding: 0px 15px;">		
+					<input placeholder="Введите название" id = "" class= "form-control col-12" name = "text" autocomplete="off">
+					<div class ='' style="z-index: 2; right: 15px;  position: absolute; " >	
+						<button class="btn shadow-none">
+							<i class="fa fa-search " style="font-size: 23px; color: grey; opacity: 0.95;"></i>
+						</button>
+					</div>
+				</div>
+				<button class="d-none" type="submit"></button>
+			</form>
+			<div class="row" style="height: 5px;"></div>
+		
+		</div>
+	</div>
+	<div class="row col-md-10  offset-md-1" >
+		<div class="bg-light d-none p-1 " style = "position: absolute; right: 0; left: 0; z-index: 100; opacity: 0.95" >
+			<div class=" " id = "search_rez" name = "">
+			
+			</div>	
+		</div>
+	</div>
+
+{% endblock %}

@@ -1,0 +1,374 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <title>Document</title>
+  </head>
+  <body>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.js" integrity="sha512-XL8wKq9jUbb9LMyrezd19IPRrf41omJUvZpqTXlpGXREAFbmoulbt3yBv+Lw+L007NL5tL0HRfnlXeKtvlvITg==" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css" integrity="sha512-vmXqikRa5kmI3gOQygzml5nV+5NGxG8rt8KWHKj8JYYK12JUl2L8RBfWinFGTzvpwwsIRcINy9mhLyodnmzjig==" crossorigin="anonymous" />
+      <script type="text/javascript"> </script>
+
+
+      <script type="text/javascript">
+
+
+
+
+
+        function Toast(message){
+          $('<div class="toast ml-auto fade show " style = "width:256px;" role="alert"> <div class="toast-header"><strong class="mr-auto text-primary">Message</strong><small class="text-muted"></small><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">×</span></button></div><div class="toast-body"> '+message+' </div></div>').appendTo('#messages').delay(6000).fadeOut(100);
+        }
+
+        $(document).ready(function(){
+          {%if messages%}
+            {%for message in messages%}
+              Toast("{{message}}");
+              console.log()
+            {%endfor%}
+          {%endif%}         
+        });
+
+
+
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+        csrf = getCookie('csrftoken');
+
+        
+        function test(){
+          Toast("Hello World");
+        }
+
+
+
+
+        
+
+
+        $(document).on('input','form[name="search_bar"]',function(e){
+          e.preventDefault();
+
+          form = $(this);
+          title = form.find('input[ name = "text"]').val();
+          if(!/\S/.test(title)){
+            $('#search_rez').html('');
+            $('#search_rez').parent().addClass('d-none');
+          }else{
+            $('#search_rez').parent().removeClass('d-none');
+            console.log(form.attr('action')+'&data=' + encodeURIComponent(title),);
+            $.ajax({
+              type: 'GET',
+              url: '/search/ajax/' + title,
+              success: function(data){
+                if(data['result'] == true){
+                  $('#search_rez').html('');
+                  for(key in data){
+                    if( key != 'result'){
+                      var image_url = data[key]['Item_image'];
+                      var item_id = key;
+                      var item_desc = data[key]['item_desc'];
+                      var title = data[key]['Title'];
+                      var html = '<a class = "page-link text-dark" href = "/items/'+item_id+'/"><div class="row" ><div class="col-3 col-sm-2 col-md-2"> <img src="'+image_url+'" class = "" style="height: 100px;"></div><div class="col-9 col-sm-10 col-md-10 "><div class = "row">'+title+'</div><div class = "row" style = "overflow:hidden;">'+item_desc+'</div></div></div></a><div class = "row " style = "height:3px;"></div>';
+                      $('#search_rez').append(html);
+                    }
+                  }
+                }else{
+                  $('#search_rez').html('');
+                  $('#search_rez').parent().addClass('d-none');
+                }
+              },
+              dataType:'json',  
+
+            });            
+          }
+
+        });
+
+
+        $(document).on('submit','form[name="search_bar"]',function(e){
+          form = $(this);
+          text = form.find('input[ name = "text"]').val();    
+          if(!/\S/.test(text)){
+            e.preventDefault();
+          }  
+        });
+
+
+        $(document).on('click','.close',function(){
+          $(this).closest('.toast').hide();
+          $(this).closest('.toast').removeClass('show');
+          $(this).closest('.toast').addClass('hide');
+        });
+
+        $(document).on('mouseenter','.toast',function(){
+         $('.toast').stop(true,true);
+        });
+
+        $(document).on('mouseleave','.toast',function(){
+         toast = $('.toast').delay(6000).fadeOut(300);
+        });
+
+
+        $(document).on('submit input', '.form-register', function(e){ 
+            e.preventDefault()
+            form = $(this);
+
+            $.ajax({
+              type: "POST",
+              url: "{% url 'loginsys:check_register' %}",
+              data: {
+                csrfmiddlewaretoken: form.find('input[name="csrfmiddlewaretoken"]').val(),
+                username:form.find('input[name="username"]').val(),
+                password1:form.find('input[name="password1"]').val(),
+                password2:form.find('input[name="password2"]').val(),
+              },
+              success: function(data){
+                if (data['result'] == true){
+                    reg_form = $('#hiddenRegisterForm > form');
+                    reg_form.find('input[name = "username"]').val(form.find('input[name="username"]').val());
+                    reg_form.find('input[name = "password1"]').val(form.find('input[name="password1"]').val());
+                    reg_form.find('input[name = "password2"]').val(form.find('input[name="password2"]').val());
+                    form.on('submit', function(){
+                      reg_form.submit();
+                    });                    
+                }else{
+                  if(!data['username']){
+                    form.find('#username_error').html('');
+                  }else{
+                    form.find('#username_error').html(data['username'])
+                  }
+                  if(!data['password1']){
+                    form.find('#password1_error').html('');
+                  }else{
+                    form.find('#password1_error').html(data['password1'])
+                  }
+                  if(!data['password2']){
+                    form.find('#password2_error').html('');
+                  }else{
+                    form.find('#password2_error').html(data['password2'])
+                  }
+                }          
+              },
+              error: function() {
+                Toast(message = "Reg error");
+              },
+              dataType: 'json'
+            });
+          });
+
+
+
+
+      </script>
+
+     {% block javascript %}
+     {%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class = "row" style = "height: 30px;"></div>
+
+
+
+<!-- START TOAST BLOCK -->
+<div id = "messages"  class=" d-flex flex-column  mb-4"  style = " z-index:100; position:fixed;width:300px; right: 0; bottom: 0;">
+ </div>
+
+
+
+
+
+
+
+
+
+
+
+  <div class = "row" style = "height: 80px;"></div>
+  <div class="row nav_menu_top">
+    <div class="col-10 offset-1" >
+      <nav class="navbar navbar-expand-lg navbar-dark" style="padding-top: 0; padding-bottom: 0; z-index: 100;">
+        <a class="navbar-brand" href="{% url 'items:index' %}">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse " id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            <li class = "nav-item nav-header-item"><a class = "nav-link " href = "{%url 'main_page:index'%}" >Главная</a></li>
+            <li class = "nav-item nav-header-item"><a class = "nav-link" href = "{% url 'items:index' %}">Каталог</a></li>
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            {% if user.username%}
+            <li class = "nav-item nav-header-item"><a class = "nav-link" href = "{% url 'loginsys:logout' %}">Выход</a></li>
+            <li class="nav-item nav-header-item " >
+              <a href ="{% url 'userprofiles:index' %}" class ="nav-link" >Личный кабинет</a>
+            </li>
+            {% else %}
+            <li class="nav-item nav-header-item " >
+              <a class="nav-link px-3"  href ="#"   data-toggle = "modal" data-target = "#loginModal">
+                Вход
+              </a>
+            </li>
+            {% endif %}
+            {% if not user.username%}
+            <li class="nav-item  nav-header-item p-0" >
+              <a class="nav-link" href ="#"   data-toggle = "modal" data-target = "#registerModal">
+                Регистрация
+              </a>
+            </li>
+            {%endif%}
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </div>
+  <div class="col-1 offset-11 fixed-top" style = "z-index: 98;">
+  </div>
+
+
+  {% block register %}{% endblock %}
+	{% block page %}{% endblock %}
+  {% block profile %}{% endblock %}
+
+
+  <div class="row d-none d-sm-block" style = "height:200px"></div>
+  </body>
+
+  <div id="registerModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        Регистрация
+        <button class = "close" data-dismiss ="modal">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form action="" method="post" class="form-group form-register">
+            {% csrf_token %}
+
+            <div id="div_id_username" class="form-group">
+              <label for="id_username" class=" requiredField">
+                Имя пользователя<span class="text-danger" id = "username_error"></span>
+              </label>
+              <div class=""> 
+                <input type="text" name="username" maxlength="150" autocapitalize="none" autocomplete="username" autofocus="" class="textinput textInput form-control username" required="" id="id_username"> 
+                <small id="hint_id_username" class="form-text text-muted">
+                  Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @.+-_  .
+                </small>
+              </div>
+            </div> 
+
+            <div id="div_id_password1" class="form-group"> 
+              <label for="id_password1" class=" requiredField">
+              Пароль<span class="text-danger" id = "password1_error"></span></label> 
+              <div class="">
+                <input type="password" name="password1" autocomplete="new-password" class="textinput textInput form-control" required="" id="id_password1"> 
+                <small id="hint_id_password1" class="form-text text-muted">
+                  <ul>
+                    <li>Ваш пароль не может быть слишком похож на вашу другую личную информацию.</li>
+                    <li>Ваш пароль должен содержать как минимум 8 символов.</li>
+                    <li>Ваш пароль не может быть распространенным паролем.</li>
+                    <li>Ваш пароль не может быть полностью числовым.</li>
+                  </ul>
+                </small>
+              </div> 
+            </div> 
+            <div id="div_id_password2" class="form-group"> 
+              <label for="id_password2" class=" requiredField">
+                Подтверждение пароля</span> <span class="text-danger" id = "password2_error"></span>
+              </label>
+              <div class=""> 
+                <input type="password" name="password2" autocomplete="new-password" class="textinput textInput form-control" required="" id="id_password2"> 
+                <small id="hint_id_password1" class="form-text text-muted">
+                  <ul>
+                    <li>Для подтверждения введите, пожалуйста, пароль ещё раз.</li>
+                    <li>Пароли должни совпадать.</li>
+                  </ul>
+                </small>
+              </div> 
+            </div>
+            <button class="btn btn-success w-100" type="submit" style="margin-top: 5px;" >Зарегистрироваться</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="hiddenRegisterForm" class="invisible" >
+  <form action="{% url 'loginsys:register' %}"  method="post">
+    {% csrf_token %}
+    <input type="hidden" name="username" val= "">
+    <input type="hidden" name="password1" val= "">
+    <input type="hidden" name="password2" val= "">
+    <button type = "submit"></button>
+  </form>
+</div>
+
+
+
+
+<div id="loginModal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        Вход
+        <button class = "close" data-dismiss ="modal">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          {%include 'login.html'%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END REGISTER MODAL -->
+
+
+
+
+
+
+
+</html>

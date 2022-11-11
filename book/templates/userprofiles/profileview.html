@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block profile %}
+<div class="row" style="height: 25px;"></div>
+<div class="col-md-10 mb-12 offset-md-1 offset-mb-0 bg-white" style = "opacity:.9; min-height: 800px; padding-top:  10px;">
+	<div class="row">
+		<div class="col-8 offset-2 col-md-3 offset-md-0">
+			{% if profile.image%}<img class="img-fluid"  src="{{profile.image_url}}">{%endif%}
+		</div>
+		<div class="col-8 offset-2 col-md-5 offset-md-1 text">
+			<h4><p class =""><strong>Login:</strong> {{profile.user}}</p>
+			{% if profile.first_name%}<p><strong>Name: </strong> {{profile.first_name}}</p>{%endif%}
+			{% if profile.last_name%}<p> <strong>Lastname :</strong> {{profile.last_name}}</p>{%endif%}
+			{% if profile.location%}<p> <strong>Location:</strong> {{profile.location}}</p>{%endif%}
+			{% if profile.bio%}<p>{{profile.bio}}</p>{%endif%}</h4>
+		</div>
+	</div>
+</div>
+{% endblock%}

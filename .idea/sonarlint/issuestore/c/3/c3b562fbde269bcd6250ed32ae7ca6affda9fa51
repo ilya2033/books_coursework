@@ -1,0 +1,14 @@
+
+<<<<<<< HEAD
+mpython:S3776œ"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(ãäù
+Ypython:S3827Å"APost is not defined. Change its name or define it before using it(ÜŠşS
+Jpython:S1481¢",Remove the unused local variable "comments".(Æ”®±ÿÿÿÿÿ
+fpython:S3827Å"Nget_object_or_404 is not defined. Change its name or define it before using it(ÜŠşS
+Gpython:S14814")Remove the unused local variable "pages".(éÍËX8†¾™©ã.
+=======
+7python:S125æ"Remove this commented out code.(ºÆÂÒ
+mpython:S3776—"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(ãäù
+Ypython:S3827¥"APost is not defined. Change its name or define it before using it(ÜŠşS
+Jpython:S1481",Remove the unused local variable "comments".(Æ”®±ÿÿÿÿÿ
+fpython:S3827¥"Nget_object_or_404 is not defined. Change its name or define it before using it(ÜŠşS
+>>>>>>> parent of 7a4b073... \-ranobe

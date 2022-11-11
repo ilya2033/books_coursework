@@ -1,0 +1,12 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block login %}
+<form action ="{% url 'loginsys:login'%}"method="post" class ="px-2 none_select" id ="login_form">
+	{% csrf_token %}
+	<span class = "text-danger" id="login_errors"></span>
+	{{ login_form|crispy }}
+	<button type = 'submit' class = "btn btn-success w-100">Войти</button>
+</form>
+{% endblock%}
