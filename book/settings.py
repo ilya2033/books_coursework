@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     "taggit",
     'items.apps.ItemsConfig',
     'loginsys.apps.LoginsysConfig',
@@ -46,7 +47,7 @@ INSTALLED_APPS = [
     'main_page.apps.MainPageConfig',
     'smart_selects'
 ]
-'crispy_forms',
+
 
 
 MIDDLEWARE = [
